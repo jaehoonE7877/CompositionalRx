@@ -26,6 +26,7 @@
 		25BEA02429091F33006396E1 /* BaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BEA02329091F32006396E1 /* BaseViewController.swift */; };
 		25BEA02629091F7D006396E1 /* Alertable.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BEA02529091F7D006396E1 /* Alertable.swift */; };
 		25BEA02829092EA8006396E1 /* SearchViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BEA02729092EA7006396E1 /* SearchViewModel.swift */; };
+		25BEA03729116E63006396E1 /* SearchCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25BEA03629116E63006396E1 /* SearchCollectionViewCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		25BEA02329091F32006396E1 /* BaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseViewController.swift; sourceTree = "<group>"; };
 		25BEA02529091F7D006396E1 /* Alertable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Alertable.swift; sourceTree = "<group>"; };
 		25BEA02729092EA7006396E1 /* SearchViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchViewModel.swift; sourceTree = "<group>"; };
+		25BEA03629116E63006396E1 /* SearchCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchCollectionViewCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -174,6 +176,7 @@
 		25BEA00A29091365006396E1 /* Search */ = {
 			isa = PBXGroup;
 			children = (
+				25BEA03529116E49006396E1 /* Cell */,
 				25BEA00C290913CF006396E1 /* View */,
 				25BEA00D290913D5006396E1 /* ViewModel */,
 			);
@@ -242,6 +245,14 @@
 				25BEA02329091F32006396E1 /* BaseViewController.swift */,
 			);
 			path = BaseView;
+			sourceTree = "<group>";
+		};
+		25BEA03529116E49006396E1 /* Cell */ = {
+			isa = PBXGroup;
+			children = (
+				25BEA03629116E63006396E1 /* SearchCollectionViewCell.swift */,
+			);
+			path = Cell;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -331,6 +342,7 @@
 			files = (
 				25BEA02629091F7D006396E1 /* Alertable.swift in Sources */,
 				25BE9FDB29090A5C006396E1 /* AppDelegate.swift in Sources */,
+				25BEA03729116E63006396E1 /* SearchCollectionViewCell.swift in Sources */,
 				25BEA02129091EE0006396E1 /* SearchViewController.swift in Sources */,
 				25BEA00829091085006396E1 /* APIKey.swift in Sources */,
 				25BEA0132909151C006396E1 /* NetworkService.swift in Sources */,
