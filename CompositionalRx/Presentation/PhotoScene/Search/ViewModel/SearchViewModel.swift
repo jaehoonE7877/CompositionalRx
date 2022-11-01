@@ -7,14 +7,37 @@
 
 import Foundation
 import RxSwift
-import RxRelay
+import RxCocoa
+
+protocol ViewModelType {
+    associatedtype Input
+    associatedtype Output
+    func transform(input: Input) -> Output
+}
 
 enum SearchError: Error {
     case noPhoto
     case serverError
 }
 
-final class SearchViewModel {
+final class SearchViewModel: ViewModelType {
+    
+    struct Input {
+        let text: ControlProperty<String>
+    }
+    
+    struct Output {
+        let searchText: Observable<String>
+    }
+    
+    func transform(input: Input) -> Output {
+        
+        let searchText = input.text
+            .debounce(.seconds(1), scheduler: MainScheduler.instance)
+            .distinctUntilChanged()
+        
+        return Output(searchText: searchText)
+    }
     
     var photoList = PublishSubject<SearchPhoto>()
     
@@ -26,14 +49,13 @@ final class SearchViewModel {
                 self?.photoList.onError(SearchError.serverError)
                 return
             }
-            
+
             guard let photo else {
                 self?.photoList.onError(SearchError.noPhoto)
                 return
             }
-            
+
             self?.photoList.onNext(photo)
         }
-    }
-    
+    }    
 }

@@ -29,7 +29,7 @@ final class NetworkService {
             switch response.result {
                 
             case .success(let value):
-                print(value)
+                //print(value)
                 
                 completion(value, statusCode, nil)
                 

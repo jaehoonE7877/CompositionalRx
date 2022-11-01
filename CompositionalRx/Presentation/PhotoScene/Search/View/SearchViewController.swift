@@ -51,6 +51,9 @@ final class SearchViewController: BaseViewController {
     
     private func setBinding() {
         
+        let input = SearchViewModel.Input(text: searchBar.rx.text.orEmpty)
+        let output = viewModel.transform(input: input)
+        
         viewModel.photoList
             .withUnretained(self)
             .subscribe { vc, photo in
@@ -67,17 +70,32 @@ final class SearchViewController: BaseViewController {
             }
             .disposed(by: disposeBag)
         
-        searchBar
-            .rx
-            .text
-            .orEmpty
-            .debounce(.seconds(1), scheduler: MainScheduler.instance )
-            .distinctUntilChanged()
+        output.searchText
             .withUnretained(self)
             .bind { vc, text in
                 vc.viewModel.requestSearchPhoto(query: text)
             }
             .disposed(by: disposeBag)
+        
+//        collectionView.rx.prefetchItems
+//            .compactMap { $0.last?.item }
+//            .withUnretained(self)
+//            .bind { vc, item in
+//                vc.viewModel.pagenationRequest(item: item, query: vc.searchBar.text!)
+//            }
+//            .disposed(by: disposeBag)
+        
+//        collectionView.rx.didScroll
+//            .subscribe { [weak self] _ in
+//                guard let self = self else { return }
+//                let offset = self.collectionView.contentOffset.y
+//                let contentHeight = self.collectionView.contentSize.height
+//                
+//                if offset > (contentHeight - self.collectionView.frame.size.height - 100) {
+//                    self.viewModel.requestSearchPhoto(query: self.searchBar.text ?? "")
+//                }
+//            }
+//            .disposed(by: disposeBag)
     }
     
 }
