@@ -16,7 +16,6 @@ final class SearchViewController: BaseViewController {
     }
     
     lazy var collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewLayout.init()).then {
-        //$0.delegate = self
         $0.translatesAutoresizingMaskIntoConstraints = false
     }
     
@@ -103,37 +102,43 @@ final class SearchViewController: BaseViewController {
 extension SearchViewController {
     
     private func configureCellLayout() -> UICollectionViewLayout {
+        // 제일 큰 사진
+        let fullSizeItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(2/3)))
+        fullSizeItem.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
+        // 2번째 줄 큰 사진 + 작은사진 x2
+        let mainItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(2/3), heightDimension: .fractionalHeight(1.0)))
+        mainItem.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
+        let pairItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(0.5)))
+        pairItem.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
         
-        let configuration = UICollectionLayoutListConfiguration(appearance: .insetGrouped)
+        let trailingGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1/3), heightDimension: .fractionalHeight(1.0)), subitem: pairItem, count: 2)
         
-        let layout = UICollectionViewCompositionalLayout.list(using: configuration)
+        let mainWithTrailingGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(4/9)), subitems: [mainItem, trailingGroup])
+        //3번째 작은 사진 x3
+        let tripleItem = NSCollectionLayoutItem(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1/3), heightDimension: .fractionalHeight(1.0)))
+        tripleItem.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
+       
+        let tripleGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(2/9)), subitem: tripleItem, count: 3)
+      
+        
+        let configuration = UICollectionViewCompositionalLayoutConfiguration()
+        //4. 2번의 반대 방향
+        let mainWithReversedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(4/9)), subitems: [trailingGroup, mainItem])
+        
+        let nestedGroup = NSCollectionLayoutGroup.vertical(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(16/9)), subitems: [fullSizeItem, mainWithTrailingGroup, tripleGroup, mainWithReversedGroup])
+        
+        let section = NSCollectionLayoutSection(group: nestedGroup)
+        
+        let layout = UICollectionViewCompositionalLayout(section: section)
         
         return layout
     }
     
     private func configureDataSource() {
         
-        let cellRegisteration = UICollectionView.CellRegistration<UICollectionViewListCell,SearchResult>(handler: { cell, indexPath, itemIdentifier in
+        let cellRegisteration = UICollectionView.CellRegistration<SearchCollectionViewCell,SearchResult>(handler: { cell, indexPath, itemIdentifier in
             
-            var content = UIListContentConfiguration.valueCell()
-            content.text = "\(itemIdentifier.likes)"
-            
-            //String >> URL >> Data >> Image
-            DispatchQueue.global().async {
-                let url = URL(string: itemIdentifier.urls.thumb)!
-                let data = try? Data(contentsOf: url)
-                
-                DispatchQueue.main.async {
-                    content.image = UIImage(data: data!)
-                    cell.contentConfiguration = content
-                }
-                
-            }
-            
-            var background = UIBackgroundConfiguration.listPlainCell()
-            background.strokeWidth = 2
-            background.strokeColor = .systemPink
-            cell.backgroundConfiguration = background
+            cell.setData(data: itemIdentifier)
             
         })
         

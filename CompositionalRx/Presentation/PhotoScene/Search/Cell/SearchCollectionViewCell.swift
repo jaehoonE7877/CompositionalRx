@@ -26,7 +26,7 @@ final class SearchCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
+        configureUI()
     }
     
     required init?(coder: NSCoder) {
@@ -35,19 +35,34 @@ final class SearchCollectionViewCell: UICollectionViewCell {
     
     private func configureUI() {
         
-        [imageView, likeLabel].forEach { contentView.addSubview($0)}
+        contentView.addSubview(imageView)
         
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 20),
+            imageView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
             imageView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
+            imageView.widthAnchor.constraint(equalTo: contentView.widthAnchor),
             
-            likeLabel.topAnchor.constraint(equalTo: imageView.topAnchor, constant: 4),
-            likeLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8),
-            likeLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -8)
-            
+//            likeLabel.topAnchor.constraint(equalTo: imageView.topAnchor, constant: 4),
+//            likeLabel.leadingAnchor.constraint(equalTo: imageView.trailingAnchor, constant: 8),
+//            likeLabel.trailingAnchor.constraint(lessThanOrEqualTo: contentView.trailingAnchor, constant: -8)
+//
         ])
+    }
+    
+    func setData(data: SearchResult) {
+        
+        //likeLabel.text = "❤️ : \(data.likes)"
+        
+        DispatchQueue.global().async {
+            guard let url = URL(string: data.urls.thumb) else { return }
+            let data = try? Data(contentsOf: url)
+            
+            DispatchQueue.main.async {
+                self.imageView.image = UIImage(data: data!)
+            }
+        }
+        
     }
     
 }
