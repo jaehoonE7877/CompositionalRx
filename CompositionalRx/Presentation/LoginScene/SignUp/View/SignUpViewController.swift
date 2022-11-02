@@ -51,12 +51,12 @@ final class SignUpViewController: BaseViewController, Alertable {
     
     private lazy var passwordValidLabel: UILabel = UILabel().then {
         $0.font = .systemFont(ofSize: 12)
-        $0.text = "비밀번호는 최소 8글자 이상 작성해주세요"
+        $0.text = "8자리 이상 입력해 주세요."
         $0.textColor = .systemRed
     }
     
     private lazy var signupButton: UIButton = UIButton().then {
-        $0.setTitle("회원가입!!", for: .normal)
+        $0.setTitle("회원가입", for: .normal)
         $0.backgroundColor = .systemOrange
         $0.layer.cornerRadius = 5
     }
@@ -119,7 +119,11 @@ final class SignUpViewController: BaseViewController, Alertable {
     //MARK: SetBinding
     override func setBinding() {
         
-        let input = SignUpViewModel.Input(nameText: nameTextField.rx.text.orEmpty, emailText: emailTextField.rx.text.orEmpty, passwordText: passwordTextField.rx.text.orEmpty, signUpTap: signupButton.rx.tap)
+        let input = SignUpViewModel.Input(
+            nameText: nameTextField.rx.text.orEmpty,
+            emailText: emailTextField.rx.text.orEmpty,
+            passwordText: passwordTextField.rx.text.orEmpty,
+            signUpTap: signupButton.rx.tap)
         let output = viewModel.transform(input: input)
         
         output.nameValid
@@ -134,16 +138,12 @@ final class SignUpViewController: BaseViewController, Alertable {
             .drive(signupButton.rx.isEnabled, passwordValidLabel.rx.isHidden)
             .disposed(by: disposeBag)
         
-        viewModel.userName
-            .bind(to: nameTextField.rx.text.orEmpty)
-            .disposed(by: disposeBag)
-        
-        viewModel.email
-            .bind(to: emailTextField.rx.text.orEmpty)
-            .disposed(by: disposeBag)
-        
-        viewModel.password
-            .bind(to: passwordTextField.rx.text.orEmpty)
+        output.passwordValid
+            .drive { [weak self] value in
+                guard let self = self else { return }
+                let color: UIColor = value ? .systemOrange : .systemGray2
+                self.signupButton.backgroundColor = color
+            }
             .disposed(by: disposeBag)
         
         output.signUpTap

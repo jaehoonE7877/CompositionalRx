@@ -61,7 +61,7 @@ final class LoginNetworkService {
         }.resume()
     }
     
-    func login(email: String, password: String, completion: @escaping (Login?, APIError?) -> Void) {
+    func login(email: String, password: String, completion: @escaping (Result<Login, APIError>) -> Void) {
         
         let api = SeSACAPI.login(email: email, password: password)
         
@@ -77,26 +77,20 @@ final class LoginNetworkService {
         URLSession.shared.dataTask(request) { data, response, error in
             
             guard error == nil else {
-                completion(nil, .failedRequest)
-                return
+                return completion(.failure(.failedRequest))
             }
             
             guard let response = response as? HTTPURLResponse, (200 ..< 300) ~= response.statusCode else {
-                completion(nil,.invalidResponse)
-                return
+                return completion(.failure(.invalidResponse))
             }
             
             guard let data = data else {
-                completion(nil, .noData)
-                return
+                return completion(.failure(.noData))
             }
             
-            do {
-                let result = try JSONDecoder().decode(Login.self, from: data)
-                completion(result, nil)
-            } catch {
-                completion(nil, .invalidData)
-            }
+            guard let result = try? JSONDecoder().decode(Login.self, from: data) else { return }
+            //completion(result)
+            
         }
     }
     

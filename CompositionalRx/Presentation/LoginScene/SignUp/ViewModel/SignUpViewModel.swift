@@ -90,7 +90,6 @@ final class SignUpViewModel: ViewModelType {
             case .failure(let error):
                 print(error)
             }
-                
         }
     }
 }
