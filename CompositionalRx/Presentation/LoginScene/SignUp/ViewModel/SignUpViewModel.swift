@@ -78,17 +78,19 @@ final class SignUpViewModel: ViewModelType {
     
     func signUpRequest() {
         
-        LoginNetworkService.shared.signUp(userName: userName.value, email: email.value, password: password.value) { value, error in
+        LoginNetworkService.shared.signUp(userName: userName.value, email: email.value, password: password.value) { result in
               
-                guard let error = error else { return }
-                print(error)
-                
-                guard let value = value else { return }
+            switch result {
+            case .success(let value):
                 if value == "ok"{
                     self.isSuccess.onNext(true)
                 } else {
                     print(value)
                 }
+            case .failure(let error):
+                print(error)
+            }
+                
         }
     }
 }
