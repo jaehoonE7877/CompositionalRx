@@ -76,7 +76,7 @@ final class LoginViewController: BaseViewController {
         
         self.passwordTextField.snp.makeConstraints { make in
             make.top.equalTo(self.emailValidLabel.snp.bottom).offset(20)
-            make.size.equalTo(self.emailValidLabel.snp.size)
+            make.size.equalTo(self.emailTextField.snp.size)
             make.centerX.equalToSuperview()
         }
         
@@ -88,7 +88,7 @@ final class LoginViewController: BaseViewController {
         
         self.loginButton.snp.makeConstraints { make in
             make.top.equalTo(self.passwordValidLabel.snp.bottom).offset(20)
-            make.size.equalTo(self.passwordValidLabel.snp.size)
+            make.size.equalTo(self.emailTextField.snp.size)
             make.centerX.equalToSuperview()
         }
         
@@ -142,22 +142,26 @@ final class LoginViewController: BaseViewController {
             .withUnretained(self)
             .bind { (vc, _) in
                 let signUpVC = SignUpViewController()
-                vc.present(signUpVC, animated: true)
+                vc.transitionViewController(viewController: signUpVC, transitionStyle: .presentFullNavigation)
             }
             .disposed(by: disposebag)
         
-//        viewModel.loginSuccess
-//            .withUnretained(self)
-//            .observe(on: MainScheduler.instance)
-//            .subscribe { <#(LoginViewController, Bool)#> in
-//                <#code#>
-//            } onError: { <#Error#> in
-//                <#code#>
-//            } onCompleted: {
-//                <#code#>
-//            } onDisposed: {
-//                <#code#>
-//            }
+        viewModel.loginSuccess
+            .withUnretained(self)
+            .observe(on: MainScheduler.instance)
+            .subscribe { (vc, value) in
+                let searchVC = SearchViewController()
+                let nav = UINavigationController(rootViewController: searchVC)
+                nav.modalPresentationStyle = .fullScreen
+                self.present(nav, animated: true)
+            } onError: { error in
+                print("========\(error)")
+            } onCompleted: {
+                print("=====completed")
+            } onDisposed: {
+                print("=====disposed")
+            }
+            .disposed(by: disposebag)
 
     }
 }

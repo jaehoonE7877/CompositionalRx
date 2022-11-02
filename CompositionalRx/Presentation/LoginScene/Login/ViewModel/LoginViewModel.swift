@@ -66,7 +66,7 @@ final class LoginViewModel: ViewModelType {
             
             switch response {
             case .success(let value):
-                
+                UserDefaults.standard.set(value.token, forKey: "token")
                 self.loginSuccess.onNext(true)
             case .failure(let error):
                 print(error)
