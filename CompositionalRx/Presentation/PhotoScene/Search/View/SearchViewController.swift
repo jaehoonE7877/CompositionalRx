@@ -31,7 +31,7 @@ final class SearchViewController: BaseViewController {
         
         collectionView.collectionViewLayout = configureCellLayout()
         configureDataSource()
-        setBinding()
+        
     }
     
     override func setConstraints() {
@@ -48,7 +48,7 @@ final class SearchViewController: BaseViewController {
         }
     }
     
-    private func setBinding() {
+    override func setBinding() {
         
         let input = SearchViewModel.Input(text: searchBar.rx.text.orEmpty)
         let output = viewModel.transform(input: input)

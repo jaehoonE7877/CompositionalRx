@@ -9,12 +9,6 @@ import Foundation
 import RxSwift
 import RxCocoa
 
-protocol ViewModelType {
-    associatedtype Input
-    associatedtype Output
-    func transform(input: Input) -> Output
-}
-
 enum SearchError: Error {
     case noPhoto
     case serverError
@@ -43,7 +37,7 @@ final class SearchViewModel: ViewModelType {
     
     func requestSearchPhoto(query: String) {
         
-        NetworkService.searchPhoto(query: query) { [weak self] photo, statusCode, error in
+        PhotoNetworkService.searchPhoto(query: query) { [weak self] photo, statusCode, error in
             
             guard let statusCode , statusCode == 200 else {
                 self?.photoList.onError(SearchError.serverError)

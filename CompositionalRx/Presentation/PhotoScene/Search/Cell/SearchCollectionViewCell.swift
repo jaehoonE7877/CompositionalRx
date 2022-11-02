@@ -11,7 +11,7 @@ final class SearchCollectionViewCell: UICollectionViewCell {
     
     private let imageView: UIImageView = {
         let view = UIImageView()
-        view.contentMode = .scaleAspectFit
+        view.contentMode = .scaleToFill
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()

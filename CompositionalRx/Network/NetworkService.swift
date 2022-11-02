@@ -11,7 +11,7 @@ import Alamofire
 import RxSwift
 import RxRelay
 
-final class NetworkService {
+final class PhotoNetworkService {
     
     private init() { }
     
