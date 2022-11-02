@@ -15,4 +15,5 @@ final class SignUpViewModel {
     let password: PublishRelay<String> = PublishRelay<String>()
     
     let validation: Observable<Bool> = Observable.of(false)
+    
 }

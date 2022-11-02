@@ -11,6 +11,7 @@ import RxSwift
 
 final class SignUpViewController: BaseViewController {
     
+    // 고려할 점: 회원가입 시 비밀번호는 재입력을 하는 부분도 있다.
     //MARK: Property
     private let disposeBag = DisposeBag()
     
@@ -109,7 +110,7 @@ final class SignUpViewController: BaseViewController {
         }
         
         self.signupButton.snp.makeConstraints { make in
-            make.top.equalTo(self.passwordValidLabel.snp.bottom).offset(16)
+            make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(-16)
             make.size.equalTo(self.nameTextField.snp.size)
             make.centerX.equalToSuperview()
         }
