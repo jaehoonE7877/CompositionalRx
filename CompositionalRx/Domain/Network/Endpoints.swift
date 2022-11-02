@@ -51,7 +51,7 @@ extension SeSACAPI {
         }
     }
     
-    var headers: HTTPHeaders {
+    var headers: [String : String] {
         switch self {
         case .signup, .login:
             return ["Content-Type": "application/x-www-form-urlencoded"]

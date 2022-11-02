@@ -13,44 +13,50 @@ final class LoginNetworkService {
     
     private init() { }
     
-    private lazy var defaultSession = URLSession(configuration: .default)
-    
     private enum HttpMethod {
         static let get = "GET"
         static let post = "POST"
     }
     
-    private func signUp(userName: String, email: String, password: String, completion: @escaping (String?, APIError?) -> Void) {
+    func signUp(userName: String, email: String, password: String, completion: @escaping (String?, APIError?) -> Void) {
         
         let api = SeSACAPI.signup(userName: userName, email: email, password: password)
         
-        let urlComponents = URLComponents(string: api.urlString)
-        guard let url = urlComponents?.url else { return }
-        //url
-        var request = URLRequest(url: url)
+        //let urlComponents = URLComponents(string: api.urlString)
+        let url = URL(string: api.urlString)
+        
+        var component = URLComponents()
+        component.queryItems = [
+            URLQueryItem(name: "userName", value: userName),
+            URLQueryItem(name: "email", value: email),
+            URLQueryItem(name: "password", value: password),
+            URLQueryItem(name: "Content-Type", value: "application/x-www-form-urlencoded")
+        ]
+        
+        var request = URLRequest(url: url!)
         //httpMethod
         request.httpMethod = HttpMethod.post
         //body
-        let param = "userName=\(userName)&email=\(email)&password=\(password)"
-        request.httpBody = param.data(using: .utf8)
+        request.httpBody = component.query?.data(using: .utf8)
         //header
-        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        request.allHTTPHeaderFields = api.headers
         
-        defaultSession.dataTask(with: request) { data, response, error in
+        URLSession.shared.dataTask(with: request) { data, response, error in
             
             guard error == nil else {
-                completion(nil, .failedRequest)
-                return
+                //print(error)
+                return completion(nil, .failedRequest)
+                
             }
             
             guard let response = response as? HTTPURLResponse, (200 ..< 300) ~= response.statusCode else {
-                completion(nil,.invalidResponse)
-                return
+                return completion(nil,.invalidResponse)
+                
             }
             
             guard let data = data else {
-                completion(nil, .noData)
-                return
+                return completion(nil, .noData)
+                
             }
             
             do {
@@ -62,7 +68,7 @@ final class LoginNetworkService {
         }
     }
     
-    private func login(email: String, password: String, completion: @escaping (Login?, APIError?) -> Void) {
+    func login(email: String, password: String, completion: @escaping (Login?, APIError?) -> Void) {
         
         let api = SeSACAPI.login(email: email, password: password)
         
@@ -75,7 +81,7 @@ final class LoginNetworkService {
         request.httpBody = param.data(using: .utf8)
         request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         
-        defaultSession.dataTask(request) { data, response, error in
+        URLSession.shared.dataTask(request) { data, response, error in
             
             guard error == nil else {
                 completion(nil, .failedRequest)
@@ -101,7 +107,7 @@ final class LoginNetworkService {
         }
     }
     
-    private func profile(completion: @escaping (UserProfile?, APIError?)-> Void) {
+    func profile(completion: @escaping (UserProfile?, APIError?)-> Void) {
         
         let api = SeSACAPI.profile
         
@@ -113,7 +119,7 @@ final class LoginNetworkService {
         request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
         request.setValue("Bearer \(UserDefaults.standard.string(forKey: "token")!)", forHTTPHeaderField: "Authorization")
         
-        defaultSession.dataTask(request) { data, response, error in
+        URLSession.shared.dataTask(request) { data, response, error in
             
             guard error == nil else {
                 completion(nil, .failedRequest)

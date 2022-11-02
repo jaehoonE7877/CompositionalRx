@@ -173,7 +173,6 @@
 			children = (
 				25BEA00029090D01006396E1 /* Data */,
 				25BE9FFF29090CFA006396E1 /* Domain */,
-				25BEA010290914BB006396E1 /* Network */,
 				25BE9FFE29090C98006396E1 /* Presentation */,
 				25BE9FFC29090C4D006396E1 /* Applicaation */,
 				25BE9FFD29090C87006396E1 /* Resources */,
@@ -213,6 +212,7 @@
 		25BE9FFF29090CFA006396E1 /* Domain */ = {
 			isa = PBXGroup;
 			children = (
+				25BEA010290914BB006396E1 /* Network */,
 				25BEA00229090D77006396E1 /* Model */,
 				25BEA00129090D70006396E1 /* UseCase */,
 			);
