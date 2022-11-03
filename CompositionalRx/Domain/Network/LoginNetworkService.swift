@@ -24,38 +24,29 @@ final class LoginNetworkService {
         
         let api = SeSACAPI.signup(userName: userName, email: email, password: password)
         
-        //let urlComponents = URLComponents(string: api.urlString)
-        let url = URL(string: api.urlString)
+        guard let url = URL(string: api.urlString) else { return }
         
         var component = URLComponents()
-        component.queryItems = [
-            URLQueryItem(name: "userName", value: userName),
-            URLQueryItem(name: "email", value: email),
-            URLQueryItem(name: "password", value: password),
-            URLQueryItem(name: "Content-Type", value: "application/x-www-form-urlencoded")
-        ]
+        component.queryItems = api.parameters
+        let body = component.query?.data(using: .utf8)
         
-        var request = URLRequest(url: url!)
-        //httpMethod
-        request.httpMethod = HttpMethod.post
-        //body
-        request.httpBody = component.query?.data(using: .utf8)
-        //header
-        request.allHTTPHeaderFields = api.headers
-                
-        URLSession.shared.dataTask(with: request) { data, response, error in
+        let request = createHttpRequest(of: url, httpMethod: HttpMethod.post, with: api.headers, with: body)
+            
+        session.dataTask(with: request) { data, response, error in
             
             guard error == nil else {
-                return completion(.failure(.failedRequest))
-                
+                completion(.failure(.failedRequest))
+                return
             }
             
             guard let response = response as? HTTPURLResponse, (200 ..< 300) ~= response.statusCode else {
-                return completion(.failure(.invalidResponse))
+                completion(.failure(.invalidResponse))
+                return
             }
             
             guard data != nil else {
-                return completion(.failure(.noData))
+                completion(.failure(.noData))
+                return
             }
             
             completion(.success("ok"))

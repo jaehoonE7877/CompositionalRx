@@ -24,6 +24,7 @@ final class LoginViewModel: ViewModelType {
     struct Output {
         let emailValid: Driver<Bool>
         let passwordValid: Driver<Bool>
+        let loginValid: Driver<Bool>
         let loginTap: ControlEvent<Void>
         let signUpTap: ControlEvent<Void>
     }
@@ -40,6 +41,10 @@ final class LoginViewModel: ViewModelType {
             .map { $0.count >= 8 }
             .asDriver(onErrorJustReturn: false)
         
+        let loginValid = Driver.combineLatest(emailValid, passwordValid) { email, password in
+            return email && password
+        }
+        
         input.emailText
             .bind { email in
                 self.email.accept(email)
@@ -52,7 +57,7 @@ final class LoginViewModel: ViewModelType {
             }
             .disposed(by: disposebag)
         
-        return Output(emailValid: emailValid, passwordValid: passwordValid, loginTap: input.loginTap, signUpTap: input.signUpTap)
+        return Output(emailValid: emailValid, passwordValid: passwordValid, loginValid: loginValid, loginTap: input.loginTap, signUpTap: input.signUpTap)
     }
     
     let email: BehaviorRelay<String> = BehaviorRelay(value: "")

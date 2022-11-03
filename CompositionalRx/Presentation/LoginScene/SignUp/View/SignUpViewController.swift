@@ -18,9 +18,11 @@ final class SignUpViewController: BaseViewController, Alertable {
     private let viewModel = SignUpViewModel()
     
     private lazy var nameTextField: UITextField = UITextField().then {
-        $0.font = .systemFont(ofSize: 14)
-        $0.layer.cornerRadius = 5
+        $0.font = .systemFont(ofSize: 16)
+        $0.layer.cornerRadius = 8
         $0.layer.borderWidth = 1
+        $0.placeholder = "닉네임"
+        $0.addLeftPadding()
         $0.becomeFirstResponder()
     }
     
@@ -31,9 +33,11 @@ final class SignUpViewController: BaseViewController, Alertable {
     }
     
     private lazy var emailTextField: UITextField = UITextField().then {
-        $0.font = .systemFont(ofSize: 14)
-        $0.layer.cornerRadius = 5
+        $0.font = .systemFont(ofSize: 16)
+        $0.layer.cornerRadius = 8
         $0.layer.borderWidth = 1
+        $0.placeholder = "이메일"
+        $0.addLeftPadding()
     }
     
     private lazy var emailValidLabel: UILabel = UILabel().then {
@@ -43,10 +47,12 @@ final class SignUpViewController: BaseViewController, Alertable {
     }
     
     private lazy var passwordTextField: UITextField = UITextField().then {
-        $0.font = .systemFont(ofSize: 14)
-        $0.layer.cornerRadius = 5
+        $0.font = .systemFont(ofSize: 16)
+        $0.layer.cornerRadius = 8
         $0.layer.borderWidth = 1
         $0.keyboardType = .asciiCapable
+        $0.placeholder = "비밀번호"
+        $0.addLeftPadding()
     }
     
     private lazy var passwordValidLabel: UILabel = UILabel().then {
@@ -58,7 +64,7 @@ final class SignUpViewController: BaseViewController, Alertable {
     private lazy var signupButton: UIButton = UIButton().then {
         $0.setTitle("회원가입", for: .normal)
         $0.backgroundColor = .systemOrange
-        $0.layer.cornerRadius = 5
+        $0.layer.cornerRadius = 8
     }
     
     //MARK: Life Cycle
@@ -136,14 +142,14 @@ final class SignUpViewController: BaseViewController, Alertable {
             .disposed(by: disposeBag)
         
         output.passwordValid
-            .drive(signupButton.rx.isEnabled, passwordValidLabel.rx.isHidden)
+            .drive(passwordValidLabel.rx.isHidden)
             .disposed(by: disposeBag)
-        
-        output.passwordValid
-            .drive { [weak self] value in
+
+        output.signUpValid
+            .drive { [weak self] valid in
                 guard let self = self else { return }
-                let color: UIColor = value ? .systemOrange : .systemGray2
-                self.signupButton.backgroundColor = color
+                self.signupButton.isEnabled = valid
+                self.signupButton.backgroundColor = valid ? .systemOrange : .systemGray
             }
             .disposed(by: disposeBag)
         

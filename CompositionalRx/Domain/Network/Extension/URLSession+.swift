@@ -47,10 +47,3 @@ extension URLSession {
         }
     }
 }
-
-enum APIError: Error {
-    case invalidResponse
-    case noData
-    case failedRequest
-    case invalidData
-}

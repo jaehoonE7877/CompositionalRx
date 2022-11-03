@@ -25,6 +25,7 @@ final class SignUpViewModel: ViewModelType {
         let nameValid: Driver<Bool>
         let emailValid: Driver<Bool>
         let passwordValid: Driver<Bool>
+        var signUpValid: Driver<Bool>
         let signUpTap: ControlEvent<Void>
     }
     
@@ -44,6 +45,10 @@ final class SignUpViewModel: ViewModelType {
         let passwordValid = input.passwordText
             .map{ $0.count >= 8 }
             .asDriver(onErrorJustReturn: false)
+        
+        let signUpValid = Driver.combineLatest(nameValid, emailValid, passwordValid){ name, email, password in
+            return name && email && password
+        }
         
         input.nameText
             .withUnretained(self)
@@ -66,7 +71,7 @@ final class SignUpViewModel: ViewModelType {
             }
             .disposed(by: disposeBag)
         
-        return Output(nameValid: nameValid, emailValid: emailValid, passwordValid: passwordValid, signUpTap: input.signUpTap)
+        return Output(nameValid: nameValid, emailValid: emailValid, passwordValid: passwordValid, signUpValid: signUpValid, signUpTap: input.signUpTap)
     }
     
     

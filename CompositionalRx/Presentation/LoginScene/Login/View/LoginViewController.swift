@@ -11,14 +11,16 @@ import RxSwift
 final class LoginViewController: BaseViewController {
     
     //MARK: Property
-    private let disposebag = DisposeBag()
+    private let disposeBag = DisposeBag()
     
     private let viewModel = LoginViewModel()
     
     private lazy var emailTextField: UITextField = UITextField().then {
-        $0.font = .systemFont(ofSize: 14)
-        $0.layer.cornerRadius = 5
+        $0.font = .systemFont(ofSize: 16)
+        $0.layer.cornerRadius = 8
         $0.layer.borderWidth = 1
+        $0.addLeftPadding()
+        $0.placeholder = "이메일"
     }
     
     private lazy var emailValidLabel: UILabel = UILabel().then {
@@ -28,10 +30,12 @@ final class LoginViewController: BaseViewController {
     }
     
     private lazy var passwordTextField: UITextField = UITextField().then {
-        $0.font = .systemFont(ofSize: 14)
-        $0.layer.cornerRadius = 5
+        $0.font = .systemFont(ofSize: 16)
+        $0.layer.cornerRadius = 8
         $0.layer.borderWidth = 1
         $0.keyboardType = .asciiCapable
+        $0.placeholder = "비밀번호"
+        $0.addLeftPadding()
     }
     
     private lazy var passwordValidLabel: UILabel = UILabel().then {
@@ -42,13 +46,13 @@ final class LoginViewController: BaseViewController {
     
     private lazy var loginButton: UIButton = UIButton().then {
         $0.setTitle("로그인하기", for: .normal)
-        $0.layer.cornerRadius = 5
+        $0.layer.cornerRadius = 8
     }
     
     private lazy var signUpButton: UIButton = UIButton().then {
         $0.setTitle("회원가입", for: .normal)
         $0.backgroundColor = .systemOrange
-        $0.layer.cornerRadius = 5
+        $0.layer.cornerRadius = 8
     }
     
     //MARK: LifeCycle
@@ -111,19 +115,20 @@ final class LoginViewController: BaseViewController {
         
         output.emailValid
             .drive(passwordTextField.rx.isEnabled, emailValidLabel.rx.isHidden)
-            .disposed(by: disposebag)
+            .disposed(by: disposeBag)
         
         output.passwordValid
-            .drive(loginButton.rx.isEnabled, passwordValidLabel.rx.isHidden)
-            .disposed(by: disposebag)
+            .drive(passwordValidLabel.rx.isHidden)
+            .disposed(by: disposeBag)
         
-        output.passwordValid
-            .drive { [weak self] value in
+        output.loginValid
+            .drive { [weak self] valid in
                 guard let self = self else { return }
-                let color: UIColor = value ? .systemOrange : .systemGray2
-                self.loginButton.backgroundColor = color
+                self.loginButton.isEnabled = valid
+                self.loginButton.backgroundColor = valid ? .systemOrange : .systemGray
             }
-            .disposed(by: disposebag)
+            .disposed(by: disposeBag)
+        
         
         output.loginTap
             .withUnretained(self)
@@ -136,7 +141,7 @@ final class LoginViewController: BaseViewController {
             } onDisposed: {
                 print("=====disposed")
             }
-            .disposed(by: disposebag)
+            .disposed(by: disposeBag)
         
         output.signUpTap
             .withUnretained(self)
@@ -145,7 +150,7 @@ final class LoginViewController: BaseViewController {
                 vc.present(signUpVC, animated: true)
                 //vc.transitionViewController(viewController: signUpVC, transitionStyle: .present)
             }
-            .disposed(by: disposebag)
+            .disposed(by: disposeBag)
         
         viewModel.loginSuccess
             .withUnretained(self)
@@ -162,7 +167,7 @@ final class LoginViewController: BaseViewController {
             } onDisposed: {
                 print("=====disposed")
             }
-            .disposed(by: disposebag)
+            .disposed(by: disposeBag)
 
     }
 }
