@@ -119,9 +119,8 @@ extension SearchViewController {
         tripleItem.contentInsets = NSDirectionalEdgeInsets(top: 2, leading: 2, bottom: 2, trailing: 2)
        
         let tripleGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(2/9)), subitem: tripleItem, count: 3)
-      
-        
-        let configuration = UICollectionViewCompositionalLayoutConfiguration()
+
+        //let configuration = UICollectionViewCompositionalLayoutConfiguration()
         //4. 2번의 반대 방향
         let mainWithReversedGroup = NSCollectionLayoutGroup.horizontal(layoutSize: NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalWidth(4/9)), subitems: [trailingGroup, mainItem])
         

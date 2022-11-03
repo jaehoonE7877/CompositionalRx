@@ -40,6 +40,12 @@ enum SeSACAPI {
 
 extension SeSACAPI {
     
+    private enum Query: String {
+        case userName
+        case email
+        case password
+    }
+    
     var urlString: String {
         switch self {
         case .signup:
@@ -63,20 +69,20 @@ extension SeSACAPI {
         }
     }
     
-    var parameters: [String: String] {
+    var parameters: [URLQueryItem] {
         switch self {
         case .signup(let userName, let email,let password):
             return [
-                "userName": userName,
-                "email": email,
-                "password": password
+                URLQueryItem(name: Query.userName.rawValue, value: userName),
+                URLQueryItem(name: Query.email.rawValue, value: email),
+                URLQueryItem(name: Query.password.rawValue, value: password)
             ]
         case .login(let email, let password):
             return [
-                "email": email,
-                "password": password
+                URLQueryItem(name: Query.email.rawValue, value: email),
+                URLQueryItem(name: Query.password.rawValue, value: password)
             ]
-        default: return ["": ""]
+        default: return [URLQueryItem(name: "", value: "")]
         }
     }
     

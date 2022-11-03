@@ -29,6 +29,7 @@ final class SearchCollectionViewCell: UICollectionViewCell {
         configureUI()
     }
     
+    @available(*, unavailable)
     required init?(coder: NSCoder) {
         fatalError()
     }

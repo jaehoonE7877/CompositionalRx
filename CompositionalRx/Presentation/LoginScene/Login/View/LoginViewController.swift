@@ -62,37 +62,37 @@ final class LoginViewController: BaseViewController {
     }
     
     override func setConstraints() {
-        self.emailTextField.snp.makeConstraints { make in
+        emailTextField.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide).offset(20)
             make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalTo(44)
         }
         
-        self.emailValidLabel.snp.makeConstraints { make in
+        emailValidLabel.snp.makeConstraints { make in
             make.top.equalTo(self.emailTextField.snp.bottom).offset(20)
             make.width.equalTo(self.emailTextField.snp.width)
             make.centerX.equalToSuperview()
         }
         
-        self.passwordTextField.snp.makeConstraints { make in
+        passwordTextField.snp.makeConstraints { make in
             make.top.equalTo(self.emailValidLabel.snp.bottom).offset(20)
             make.size.equalTo(self.emailTextField.snp.size)
             make.centerX.equalToSuperview()
         }
         
-        self.passwordValidLabel.snp.makeConstraints { make in
+        passwordValidLabel.snp.makeConstraints { make in
             make.top.equalTo(self.passwordTextField.snp.bottom).offset(20)
             make.width.equalTo(self.passwordTextField.snp.width)
             make.centerX.equalToSuperview()
         }
         
-        self.loginButton.snp.makeConstraints { make in
+        loginButton.snp.makeConstraints { make in
             make.top.equalTo(self.passwordValidLabel.snp.bottom).offset(20)
             make.size.equalTo(self.emailTextField.snp.size)
             make.centerX.equalToSuperview()
         }
         
-        self.signUpButton.snp.makeConstraints { make in
+        signUpButton.snp.makeConstraints { make in
             make.top.equalTo(self.loginButton.snp.bottom).offset(20)
             make.size.equalTo(self.loginButton.snp.size)
             make.centerX.equalToSuperview()
@@ -127,7 +127,7 @@ final class LoginViewController: BaseViewController {
         
         output.loginTap
             .withUnretained(self)
-            .subscribe { (vc, _) in
+            .subscribe { vc, _ in
                 vc.viewModel.loginRequest()
             } onError: { error in
                 print("=====\(error)")
@@ -140,9 +140,10 @@ final class LoginViewController: BaseViewController {
         
         output.signUpTap
             .withUnretained(self)
-            .bind { (vc, _) in
+            .bind { vc, _ in
                 let signUpVC = SignUpViewController()
-                vc.transitionViewController(viewController: signUpVC, transitionStyle: .presentFullNavigation)
+                vc.present(signUpVC, animated: true)
+                //vc.transitionViewController(viewController: signUpVC, transitionStyle: .present)
             }
             .disposed(by: disposebag)
         

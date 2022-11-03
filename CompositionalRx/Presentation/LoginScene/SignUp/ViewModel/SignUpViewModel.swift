@@ -13,22 +13,18 @@ import RxCocoa
 final class SignUpViewModel: ViewModelType {
     
     private let disposeBag = DisposeBag()
-    //input : textfield 3개, tap
+    
     struct Input {
         let nameText: ControlProperty<String>
         let emailText: ControlProperty<String>
         let passwordText: ControlProperty<String>
         let signUpTap: ControlEvent<Void>
     }
-    //output: label 3개, tap
+    
     struct Output{
-        
         let nameValid: Driver<Bool>
-        
         let emailValid: Driver<Bool>
-        
         let passwordValid: Driver<Bool>
-        
         let signUpTap: ControlEvent<Void>
     }
     
@@ -39,8 +35,9 @@ final class SignUpViewModel: ViewModelType {
             .asDriver(onErrorJustReturn: false)
         
         let emailValid = input.emailText
-            .map { text in
-                self.validateEmail(text)
+            .withUnretained(self)
+            .map { vm, text in
+                vm.validateEmail(text)
             }
             .asDriver(onErrorJustReturn: false)
         
@@ -49,20 +46,23 @@ final class SignUpViewModel: ViewModelType {
             .asDriver(onErrorJustReturn: false)
         
         input.nameText
-            .bind { value in
-                self.userName.accept(value)
+            .withUnretained(self)
+            .bind { vm, value in
+                vm.userName.accept(value)
             }
             .disposed(by: disposeBag)
         
         input.emailText
-            .bind { value in
-                self.email.accept(value)
+            .withUnretained(self)
+            .bind { vm, value in
+                vm.email.accept(value)
             }
             .disposed(by: disposeBag)
-            
+        
         input.passwordText
-            .bind { value in
-                self.password.accept(value)
+            .withUnretained(self)
+            .bind { vm, value in
+                vm.password.accept(value)
             }
             .disposed(by: disposeBag)
         
@@ -75,30 +75,23 @@ final class SignUpViewModel: ViewModelType {
     let password: BehaviorRelay<String> = BehaviorRelay(value: "")
     
     let isSuccess: BehaviorSubject<Bool> = BehaviorSubject(value: false)
+    let isSame: BehaviorSubject<Bool> = BehaviorSubject(value: false)
     
     func signUpRequest() {
         
         LoginNetworkService.shared.signUp(userName: userName.value, email: email.value, password: password.value) { result in
-              
+            
             switch result {
             case .success(let value):
                 if value == "ok"{
                     self.isSuccess.onNext(true)
                 } else {
-                    print(value)
+                    
                 }
             case .failure(let error):
+                //error처리
                 print(error)
             }
         }
     }
 }
-
-extension SignUpViewModel {
-    private func validateEmail(_ text: String) -> Bool {
-        let emailRegEx = "[A-Z0-9a-z._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,64}"
-        let emailTest = NSPredicate(format:"SELF MATCHES %@", emailRegEx)
-        return emailTest.evaluate(with: text)
-    }
-}
-

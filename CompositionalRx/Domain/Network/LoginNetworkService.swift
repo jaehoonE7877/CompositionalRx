@@ -7,16 +7,18 @@
 
 import Foundation
 
+enum HttpMethod {
+    static let get = "GET"
+    static let post = "POST"
+}
+
 final class LoginNetworkService {
     
     static let shared = LoginNetworkService()
     
     private init() { }
     
-    private enum HttpMethod {
-        static let get = "GET"
-        static let post = "POST"
-    }
+    private let session = URLSession.shared
     
     func signUp(userName: String, email: String, password: String, completion: @escaping (Result<String, APIError>) -> Void) {
         
@@ -35,7 +37,7 @@ final class LoginNetworkService {
         
         var request = URLRequest(url: url!)
         //httpMethod
-        request.httpMethod = "POST"
+        request.httpMethod = HttpMethod.post
         //body
         request.httpBody = component.query?.data(using: .utf8)
         //header
@@ -61,74 +63,59 @@ final class LoginNetworkService {
         }.resume()
     }
     
-    func login(email: String, password: String, completion: @escaping (Result<Login, APIError>) -> Void) {
+    func requestAuth<T: Decodable>(type: T.Type = T.self, urlString: String, method: String, headers: [String: String]? = nil, body: [URLQueryItem]? = nil, completion: @escaping (Result<T, APIError>) -> Void) {
         
-        let api = SeSACAPI.login(email: email, password: password)
+        guard let url = URL(string: urlString) else { return }
         
-        let urlComponents = URLComponents(string: api.urlString)
-        guard let url = urlComponents?.url else { return }
+        var components = URLComponents()
+        components.queryItems = body
+        let body = components.query?.data(using: .utf8)
         
-        var request = URLRequest(url: url)
-        request.httpMethod = HttpMethod.post
-        let param = "email=\(email)&password=\(password)"
-        request.httpBody = param.data(using: .utf8)
-        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
+        let request = createHttpRequest(of: url, httpMethod: method, with: headers, with: body)
         
-        URLSession.shared.dataTask(request) { data, response, error in
+        session.dataTask(with: request) { data, response, error in
             
             guard error == nil else {
-                return completion(.failure(.failedRequest))
-            }
-            
-            guard let response = response as? HTTPURLResponse, (200 ..< 300) ~= response.statusCode else {
-                return completion(.failure(.invalidResponse))
-            }
-            
-            guard let data = data else {
-                return completion(.failure(.noData))
-            }
-            
-            guard let result = try? JSONDecoder().decode(Login.self, from: data) else { return }
-            //completion(result)
-            
-        }
-    }
-    
-    func profile(completion: @escaping (UserProfile?, APIError?)-> Void) {
-        
-        let api = SeSACAPI.profile
-        
-        let urlComponents = URLComponents(string: api.urlString)
-        guard let url = urlComponents?.url else { return }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = HttpMethod.get
-        request.addValue("application/x-www-form-urlencoded", forHTTPHeaderField: "Content-Type")
-        request.setValue("Bearer \(UserDefaults.standard.string(forKey: "token")!)", forHTTPHeaderField: "Authorization")
-        
-        URLSession.shared.dataTask(request) { data, response, error in
-            
-            guard error == nil else {
-                completion(nil, .failedRequest)
+                completion(.failure(.failedRequest))
                 return
             }
             
             guard let response = response as? HTTPURLResponse, (200 ..< 300) ~= response.statusCode else {
-                completion(nil,.invalidResponse)
+                completion(.failure(.invalidResponse))
                 return
             }
             
             guard let data = data else {
-                completion(nil, .noData)
+                completion(.failure(.noData))
                 return
             }
             
             do {
-                let result = try JSONDecoder().decode(UserProfile.self, from: data)
-                completion(result, nil)
+                let result = try JSONDecoder().decode(T.self, from: data)
+                completion(.success(result))
             } catch {
-                completion(nil, .invalidData)
+                completion(.failure(.invalidData))
             }
-        }
+        }.resume()
     }
+    
+    private func createHttpRequest(
+        of url: URL,
+        httpMethod: String,
+        with headers: [String: String]? = nil,
+        with body: Data? = nil
+    ) -> URLRequest {
+        var request = URLRequest(url: url)
+        request.httpMethod = httpMethod
+        headers?.forEach({ header in
+            request.addValue(header.value, forHTTPHeaderField: header.key)
+        })
+        if let body = body {
+            request.httpBody = body
+        }
+        
+        return request
+    }
+
 }
+

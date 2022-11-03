@@ -73,43 +73,44 @@ final class SignUpViewController: BaseViewController, Alertable {
     }
     
     override func setConstraints() {
-        self.nameTextField.snp.makeConstraints { make in
+        
+        nameTextField.snp.makeConstraints { make in
             make.top.equalTo(self.view.safeAreaLayoutGuide).offset(20)
             make.horizontalEdges.equalToSuperview().inset(20)
             make.height.equalTo(44)
         }
         
-        self.nameValidLabel.snp.makeConstraints { make in
+        nameValidLabel.snp.makeConstraints { make in
             make.top.equalTo(self.nameTextField.snp.bottom).offset(20)
             make.width.equalTo(self.nameTextField.snp.width)
             make.centerX.equalToSuperview()
         }
         
-        self.emailTextField.snp.makeConstraints { make in
+        emailTextField.snp.makeConstraints { make in
             make.top.equalTo(self.nameValidLabel.snp.bottom).offset(20)
             make.size.equalTo(self.nameTextField.snp.size)
             make.centerX.equalToSuperview()
         }
         
-        self.emailValidLabel.snp.makeConstraints { make in
+        emailValidLabel.snp.makeConstraints { make in
             make.top.equalTo(self.emailTextField.snp.bottom).offset(20)
             make.width.equalTo(self.nameTextField.snp.width)
             make.centerX.equalToSuperview()
         }
         
-        self.passwordTextField.snp.makeConstraints { make in
+        passwordTextField.snp.makeConstraints { make in
             make.top.equalTo(self.emailValidLabel.snp.bottom).offset(20)
             make.size.equalTo(self.nameTextField.snp.size)
             make.centerX.equalToSuperview()
         }
         
-        self.passwordValidLabel.snp.makeConstraints { make in
+        passwordValidLabel.snp.makeConstraints { make in
             make.top.equalTo(self.passwordTextField.snp.bottom).offset(20)
             make.width.equalTo(self.nameTextField.snp.width)
             make.centerX.equalToSuperview()
         }
         
-        self.signupButton.snp.makeConstraints { make in
+        signupButton.snp.makeConstraints { make in
             make.bottom.equalTo(self.view.safeAreaLayoutGuide).offset(-20)
             make.size.equalTo(self.nameTextField.snp.size)
             make.centerX.equalToSuperview()

@@ -12,40 +12,39 @@ extension URLSession {
     typealias completion = (Data?, URLResponse?, Error?)-> Void
     
     @discardableResult
-    func dataTask(_ request: URLRequest, completion: @escaping completion) -> URLSessionDataTask{
+    private func dataTask(_ request: URLRequest, completion: @escaping completion) -> URLSessionDataTask{
         let task = dataTask(with: request, completionHandler: completion)
         
         task.resume()
         return task
     }
     
-    static func request<T: Codable>(_ session: URLSession = .shared, request: URLRequest, completion: @escaping (T?, APIError?) -> Void) {
+    static func request<T: Codable>(_ session: URLSession = .shared, request: URLRequest, completion: @escaping (Result<T, APIError>) -> Void) {
         
         session.dataTask(request) { data, response, error in
             
             guard error == nil else {
-                completion(nil, .failedRequest)
+                completion(.failure(.failedRequest))
                 return
             }
             
             guard let response = response as? HTTPURLResponse, (200 ..< 300) ~= response.statusCode else {
-                completion(nil,.invalidResponse)
+                completion(.failure(.invalidResponse))
                 return
             }
             
             guard let data = data else {
-                completion(nil, .noData)
+                completion(.failure(.noData))
                 return
             }
             
             do {
                 let result = try JSONDecoder().decode(T.self, from: data)
-                completion(result, nil)
+                completion(.success(result))
             } catch {
-                completion(nil, .invalidData)
+                completion(.failure(.invalidData))
             }
         }
-
     }
 }
 
